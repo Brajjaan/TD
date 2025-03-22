@@ -36,7 +36,20 @@ public class Spawner : MonoBehaviour
     private void SpawnEnemy()
     {
         GameObject newInstance = _pooler.GetInstanceFromPool();
+    
+        // Force Z = 0 when spawning
+        Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, 0);
+        newInstance.transform.position = spawnPos;
+
         newInstance.SetActive(true);
+
+        Enemy enemyScript = newInstance.GetComponent<Enemy>();
+        if (enemyScript != null)
+        {
+            enemyScript.Initialize(FindObjectOfType<Waypoint>());
+        }
+
+        Debug.Log($"Spawned at: {newInstance.transform.position}");
     }
 }
 

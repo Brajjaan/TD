@@ -28,6 +28,11 @@ public class ObjectPooler : MonoBehaviour
     {
         GameObject newInstance = Instantiate(prefab);
         newInstance.transform.SetParent(_poolContainer.transform);
+    
+        // Force the correct Z position
+        Vector3 correctedPosition = new Vector3(newInstance.transform.position.x, newInstance.transform.position.y, 0);
+        newInstance.transform.position = correctedPosition;
+
         newInstance.SetActive(false);
         return newInstance;
     }
@@ -38,12 +43,17 @@ public class ObjectPooler : MonoBehaviour
         {
             if (!_pool[i].activeInHierarchy)
             {
+                _pool[i].SetActive(true);  // Ensure it's enabled
                 return _pool[i];
             }
         }
 
-        return CreateInstance();
+        GameObject newInstance = CreateInstance();
+        _pool.Add(newInstance);
+        newInstance.SetActive(true);
+        return newInstance;
     }
+
 
     public static void ReturnToPool(GameObject instance)
     {
