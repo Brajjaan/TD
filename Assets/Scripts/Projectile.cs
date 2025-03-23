@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private int damage = 1;
-    
+    [SerializeField] public int damage;
+    public float speed = 5f;
     private Enemy target;
 
-    public void SetTarget(Enemy enemyTarget)
+    public void SetTarget(Enemy enemy)
     {
-        target = enemyTarget;
+        target = enemy;
     }
 
     private void Update()
@@ -20,21 +19,10 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        // Move towards the target
         Vector3 direction = (target.transform.position - transform.position).normalized;
         transform.position += direction * speed * Time.deltaTime;
 
-        // If close enough to the target, apply damage and destroy itself
         if (Vector3.Distance(transform.position, target.transform.position) < 0.2f)
-        {
-            target.TakeDamage(damage);
-            Destroy(gameObject);
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy") && other.GetComponent<Enemy>() == target)
         {
             target.TakeDamage(damage);
             Destroy(gameObject);

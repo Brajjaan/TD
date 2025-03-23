@@ -19,7 +19,7 @@ public class Turret : MonoBehaviour
         if (fireCooldown <= 0f && CurrentEnemyTarget != null)
         {
             FireAtTarget();
-            fireCooldown = 1f / fireRate; // Reset cooldown
+            fireCooldown = 1f / fireRate;
         }
 
         fireCooldown -= Time.deltaTime;
@@ -27,14 +27,30 @@ public class Turret : MonoBehaviour
 
     private void GetCurrentEnemyTarget()
     {
-        if (_enemies.Count <= 0)
+        if (_enemies.Count == 0)
         {
             CurrentEnemyTarget = null;
             return;
         }
 
-        CurrentEnemyTarget = _enemies[0]; // Target first enemy in list
+        float closestDistance = Mathf.Infinity;
+        Enemy closestEnemy = null;
+
+        foreach (Enemy enemy in _enemies)
+        {
+            if (enemy == null) continue;
+
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy;
+            }
+        }
+
+        CurrentEnemyTarget = closestEnemy;
     }
+
 
     private void RotateTowardsTarget()
     {
@@ -43,8 +59,10 @@ public class Turret : MonoBehaviour
 
         Vector3 direction = CurrentEnemyTarget.transform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
+
 
     private void FireAtTarget()
     {
